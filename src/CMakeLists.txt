@@ -1,5 +1,6 @@
 set(SRCS
-    main.cpp
+    # main.cpp
+    window.cpp
 )
 
 target_sources(chess PRIVATE ${SRCS})
