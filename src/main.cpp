@@ -1,6 +1,6 @@
-#include <iostream>
+#include "app.h"
 
-int main(){
-    std::cout << "Hello World" << std::endl;
-    return 0;
+int main() {
+    App app(600, 400, "ChessPP");
+    app.run();
 }
