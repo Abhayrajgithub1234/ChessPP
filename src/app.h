@@ -5,6 +5,7 @@
 
 class App {
     public:
+        int width, height;
         App(unsigned int width, unsigned int height, const char *name);
         ~App();
         void run();
