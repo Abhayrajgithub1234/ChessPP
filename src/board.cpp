@@ -9,16 +9,20 @@ Board::Board(int width, int height, SDL_Window* window) {
 }
 
 void Board::draw() {
-    Square s1(0, 0, 64, Color::WHITE, this->m_renderer);
-    s1.draw();
-    Square s2(64, 0, 64, Color::BLACK, this->m_renderer);
-    s2.draw();
-    Square s3(128, 0, 64, Color::WHITE, this->m_renderer);
-    s3.draw();
-    Square s4((128 * 2), 0, 64, Color::BLACK, this->m_renderer);
-    s4.draw();
-    Square s5((128 * 4), 0, 64, Color::WHITE, this->m_renderer);
-    s5.draw();
+    Square S[64];
+
+    int colorIndex = 0;
+
+    for (int i = 0; i < 8; i++, colorIndex++) {
+        for (int j = 0; j < 8; j++) {
+            Color color = colorIndex++ % 2 == 0 ? Color::WHITE : Color::BLACK;
+            S[i * 8 + j].set_values(j * 75, i * 75, 75, color, m_renderer);
+        }
+    }
+
+    for (int i = 0; i < 64; i++) {
+        S[i].draw();
+    }
 }
 
 Board::~Board() {

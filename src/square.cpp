@@ -2,6 +2,14 @@
 
 #include <string.h>
 
+Square::Square() {
+    this->x = 0;
+    this->y = 0;
+    this->size = 0;
+    this->color = Color::NONE;
+    this->m_renderer = nullptr;
+}
+
 Square::Square(int x, int y, int size, Color color, SDL_Renderer* renderer) {
     this->x = x;
     this->y = y;
@@ -14,7 +22,7 @@ Square ::~Square() {
 }
 
 void Square::draw() {
-    SDL_RenderClear(m_renderer);
+    // SDL_RenderClear(m_renderer);
 
     SDL_Rect rect;
 
@@ -34,4 +42,13 @@ void Square::draw() {
 
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderPresent(m_renderer);
+}
+
+void Square::set_values(int x, int y, int size, Color color,
+                        SDL_Renderer* renderer) {
+    this->x = x;
+    this->y = y;
+    this->size = size;
+    this->color = color;
+    this->m_renderer = renderer;
 }

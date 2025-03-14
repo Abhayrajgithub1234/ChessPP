@@ -1,3 +1,3 @@
 #pragma once
 
-enum class Color { BLACK, WHITE };
+enum class Color { NONE = 0, WHITE, BLACK };
