@@ -27,6 +27,6 @@ void App::run() {
             }
         }
         board.draw();
-        SDL_UpdateWindowSurface(m_window);
+        // SDL_UpdateWindowSurface(m_window);
     }
 }
