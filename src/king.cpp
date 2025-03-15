@@ -25,10 +25,14 @@ void King::draw(SDL_Renderer* m_renderer) {
 }
 
 void King::setColor(Color color, SDL_Renderer* m_renderer) {
+    this->color = color;
     SDL_Surface* m_imageSurface = SDL_LoadBMP((
         color == Color::WHITE ? "../assets/Wking.bmp" : "../assets/Bking.bmp"));
     if (!m_imageSurface) printf("Image not loaded!!\n");
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
+}
+
+void King::getValidMoves(State* boardState, int index) {
 }
 

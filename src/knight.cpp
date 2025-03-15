@@ -1,5 +1,6 @@
-#include "colors.h"
 #include "knight.h"
+
+#include "colors.h"
 
 Knight::Knight() : Piece(0, 0, Color::NONE) {
 }
@@ -24,10 +25,14 @@ void Knight::draw(SDL_Renderer* m_renderer) {
 }
 
 void Knight::setColor(Color color, SDL_Renderer* m_renderer) {
-    SDL_Surface* m_imageSurface = SDL_LoadBMP((
-        color == Color::WHITE ? "../assets/Wknight.bmp" : "../assets/Bknight.bmp"));
+    this->color = color;
+    SDL_Surface* m_imageSurface =
+        SDL_LoadBMP((color == Color::WHITE ? "../assets/Wknight.bmp"
+                                           : "../assets/Bknight.bmp"));
     if (!m_imageSurface) printf("Image not loaded!!\n");
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
 }
 
+void Knight::getValidMoves(State* boardState, int index) {
+}

@@ -1,13 +1,15 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include "pawn.h"
-#include "king.h"
-#include "queen.h"
-#include "square.h"
-#include "rook.h"
-#include "knight.h"
+
 #include "bishop.h"
+#include "king.h"
+#include "knight.h"
+#include "pawn.h"
+#include "queen.h"
+#include "rook.h"
+#include "square.h"
+#include "state.h"
 
 class Board {
     private:
@@ -23,8 +25,12 @@ class Board {
         Knight KN[4];
         Bishop B[4];
 
+        State boardState[64];
+
     public:
         Board(int width, int height, SDL_Window* window);
         ~Board();
         void draw();
+        void clickedPosition(int x, int y);
+
 };

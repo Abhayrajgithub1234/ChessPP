@@ -24,6 +24,10 @@ void App::run() {
                 case SDL_QUIT:
                     running = false;
                     break;
+                case SDL_MOUSEBUTTONDOWN:
+                    board.clickedPosition(m_window_event.button.x,
+                                          m_window_event.button.y);
+                    break;
             }
         }
         board.draw();

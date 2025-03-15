@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "colors.h"
+#include "state.h"
 
 class Piece {
     protected:
@@ -26,6 +27,8 @@ class Piece {
             this->yPos = yPos;
             this->color = color;
         }
+
+        virtual void getValidMoves(State* boardState, int index) = 0;
 
         virtual ~Piece() {
 

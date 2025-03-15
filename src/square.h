@@ -9,10 +9,11 @@ class Square {
         int x, y, size;
         Color color;
         SDL_Renderer* m_renderer;
-        bool empty;
         Piece* piece;
 
     public:
+        bool empty;
+        bool isHighlighted;
         Square();
         Square(int x, int y, int size, Color color, SDL_Renderer* renderer);
         ~Square();
@@ -22,4 +23,6 @@ class Square {
         void draw();
         void setPiece(Piece* Piece);
         void clearPiece();
+        Piece* getPiece();
+
 };

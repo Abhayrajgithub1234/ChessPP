@@ -25,11 +25,15 @@ void Pawn::draw(SDL_Renderer* m_renderer) {
 }
 
 void Pawn::setColor(Color color, SDL_Renderer* m_renderer) {
-    SDL_Surface* m_imageSurface =
-        SDL_LoadBMP((color == Color::WHITE ? "../assets/Wpawn.bmp"
-                                           : "../assets/Bpawn.bmp"));
+    this->color = color;
+    SDL_Surface* m_imageSurface = SDL_LoadBMP((
+        color == Color::WHITE ? "../assets/Wpawn.bmp" : "../assets/Bpawn.bmp"));
     if (!m_imageSurface) printf("Image not loaded!!\n");
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
+}
+
+void Pawn::getValidMoves(State* boardState, int index) {
+    boardState[index] = State::VALID;
 }
 

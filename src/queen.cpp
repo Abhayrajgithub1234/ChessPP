@@ -1,5 +1,6 @@
-#include "colors.h"
 #include "queen.h"
+
+#include "colors.h"
 
 Queen::Queen() : Piece(0, 0, Color::NONE) {
 }
@@ -24,10 +25,15 @@ void Queen::draw(SDL_Renderer* m_renderer) {
 }
 
 void Queen::setColor(Color color, SDL_Renderer* m_renderer) {
-    SDL_Surface* m_imageSurface = SDL_LoadBMP((
-        color == Color::WHITE ? "../assets/Wqueen.bmp" : "../assets/Bqueen.bmp"));
+    this->color = color;
+    SDL_Surface* m_imageSurface =
+        SDL_LoadBMP((color == Color::WHITE ? "../assets/Wqueen.bmp"
+                                           : "../assets/Bqueen.bmp"));
     if (!m_imageSurface) printf("Image not loaded!!\n");
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
+}
+
+void Queen::getValidMoves(State* boardState, int index) {
 }
 

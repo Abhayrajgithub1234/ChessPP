@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-#include "piece.h" 
 #include "piece.h"
 
 class King : public Piece {
@@ -11,5 +10,6 @@ class King : public Piece {
         ~King() override;
         void draw(SDL_Renderer* m_renderer) override;
         void setColor(Color color, SDL_Renderer* m_renderer) override;
+        void getValidMoves(State* boardState, int index) override;
 };
 

@@ -20,6 +20,7 @@ set(SRCS
     knight.cpp
     bishop.h
     bishop.cpp
+    state.h
     
 )
 

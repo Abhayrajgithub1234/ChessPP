@@ -1,5 +1,6 @@
-#include "colors.h"
 #include "bishop.h"
+
+#include "colors.h"
 
 Bishop::Bishop() : Piece(0, 0, Color::NONE) {
 }
@@ -24,10 +25,15 @@ void Bishop::draw(SDL_Renderer* m_renderer) {
 }
 
 void Bishop::setColor(Color color, SDL_Renderer* m_renderer) {
-    SDL_Surface* m_imageSurface = SDL_LoadBMP((
-        color == Color::WHITE ? "../assets/Wbishop.bmp" : "../assets/Bbishop.bmp"));
+    this->color = color;
+    SDL_Surface* m_imageSurface =
+        SDL_LoadBMP((color == Color::WHITE ? "../assets/Wbishop.bmp"
+                                           : "../assets/Bbishop.bmp"));
     if (!m_imageSurface) printf("Image not loaded!!\n");
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
+}
+
+void Bishop::getValidMoves(State* boardState, int index) {
 }
 
