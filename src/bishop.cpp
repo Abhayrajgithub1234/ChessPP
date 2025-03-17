@@ -35,5 +35,124 @@ void Bishop::setColor(Color color, SDL_Renderer* m_renderer) {
 }
 
 void Bishop::getValidMoves(State* boardState, int index) {
-}
+    if (this->color == Color::WHITE) {
+        if (index % 8 != 7) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (7 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
 
+                if ((boardState[mov] <= State::BPAWN
+                     && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (9 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+
+                if ((boardState[mov] <= State::BPAWN
+                     && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+        }
+
+        if (index % 8 != 0) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (9 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+
+                if ((boardState[mov] <= State::BPAWN
+                     && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (7 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+
+                if ((boardState[mov] <= State::BPAWN
+                     && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+        }
+    } else {
+        if (index % 8 != 7) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (7 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+
+                if ((boardState[mov] <= State::WPAWN
+                     && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (9 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+
+                if ((boardState[mov] <= State::WPAWN
+                     && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+        }
+
+        if (index % 8 != 0) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (9 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+
+                if ((boardState[mov] <= State::WPAWN
+                     && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (7 * i);
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] = State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if ((boardState[mov] <= State::WPAWN
+                     && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] = State::VALID;
+                }
+                break;
+            }
+        }
+    }
+}
