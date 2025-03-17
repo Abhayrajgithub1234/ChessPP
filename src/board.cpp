@@ -5,6 +5,8 @@ Board::Board(int width, int height, SDL_Window* window) {
     this->height = height;
     this->m_renderer = SDL_CreateRenderer(window, -1, 0);
     this->m_windowSurface = SDL_GetWindowSurface(window);
+    this->selectedSquare = nullptr;
+    this->selectedSquareIndex = -1;
 
     int colorIndex = 0;
     for (int i = 0; i < 8; i++, colorIndex++) {
@@ -81,24 +83,54 @@ Board::~Board() {
     SDL_FreeSurface(m_windowSurface);
 }
 
+void Board::clearHighlighted() {
+    for (int i = 0; i < 64; i++) {
+        S[i].isHighlighted = false;
+    }
+}
+
+void Board::movePiece(Square* sq, int index) {
+    sq->setPiece(selectedSquare->getPiece());
+    boardState[index] = boardState[selectedSquareIndex];
+    selectedSquare->clearPiece();
+    boardState[selectedSquareIndex] = State::NONE;
+    selectedSquare = nullptr;
+    selectedSquareIndex = -1;
+
+}
+
 void Board::clickedPosition(int x, int y) {
     int j = x / 75;
     int i = y / 75;
     int index = i * 8 + j;
 
-    Square sq = S[index];
+    Square* sq = &S[index];
 
-    State copyBoardState[64];
-    for (int i = 0; i < 64; i++) {
-        copyBoardState[i] = boardState[i];
+    if (sq->isHighlighted) {
+        movePiece(sq, index);
+        clearHighlighted();
+        return;
     }
 
-    if (!sq.empty) {
-        sq.getPiece()->getValidMoves(copyBoardState, index);
+    clearHighlighted();
+
+    if (!sq->empty) {
+        State copyBoardState[64];
+
+        for (int i = 0; i < 64; i++) {
+            copyBoardState[i] = boardState[i];
+        }
+
+        selectedSquare = sq;
+        selectedSquareIndex = index;
+        sq->getPiece()->getValidMoves(copyBoardState, index);
         for (int i = 0; i < 64; i++) {
             if (copyBoardState[i] == State::VALID) {
                 S[i].isHighlighted = true;
             }
         }
+    } else {
+        selectedSquare = nullptr;
+        selectedSquareIndex = -1;
     }
 }

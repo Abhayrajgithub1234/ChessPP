@@ -1,18 +1,20 @@
 #pragma once
 
-enum class State{
+enum class State {
     NONE = 0,
-    BPAWN,
-    WPAWN,
-    BKING,
-    WKING,
-    BQUEEN,
-    WQUEEN,
-    BROOK,
+    VALID,
+
     WROOK,
-    BKNIGHT,
     WKNIGHT,
-    BBISHOP,
     WBISHOP,
-    VALID
+    WQUEEN,
+    WKING,
+    WPAWN,
+
+    BROOK,
+    BKNIGHT,
+    BBISHOP,
+    BQUEEN,
+    BKING,
+    BPAWN,
 };

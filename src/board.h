@@ -26,11 +26,16 @@ class Board {
         Bishop B[4];
 
         State boardState[64];
+        Square* selectedSquare;
+        int selectedSquareIndex;
+
+    private:
+        void clearHighlighted();
+        void movePiece(Square* sq, int index);
 
     public:
         Board(int width, int height, SDL_Window* window);
         ~Board();
         void draw();
         void clickedPosition(int x, int y);
-
 };
