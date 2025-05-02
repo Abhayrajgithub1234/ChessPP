@@ -8,6 +8,7 @@ Square::Square() {
     this->m_renderer = nullptr;
     this->empty = true;
     this->isHighlighted = false;
+    this->isCheck = false;
 }
 
 Square::Square(int x, int y, int size, Color color, SDL_Renderer* m_renderer) {
@@ -19,6 +20,7 @@ Square::Square(int x, int y, int size, Color color, SDL_Renderer* m_renderer) {
     this->empty = true;
     this->piece = nullptr;
     this->isHighlighted = false;
+    this->isCheck = false;
 }
 
 Square ::~Square() {
@@ -39,6 +41,8 @@ void Square::draw() {
         SDL_SetRenderDrawColor(m_renderer, 97, 75, 75, 255);
     }
     if (isHighlighted) SDL_SetRenderDrawColor(m_renderer, 135, 206, 235, 255);
+
+    if (isCheck) SDL_SetRenderDrawColor(m_renderer, 168, 50, 54, 255);
 
     SDL_RenderFillRect(m_renderer, &rect);
 

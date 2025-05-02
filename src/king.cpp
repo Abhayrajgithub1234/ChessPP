@@ -33,6 +33,149 @@ void King::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
-void King::getValidMoves(State* boardState, int index) {
+void King::getValidMoves(int boardState[], int index) {
+    if (this->color == Color::WHITE) {
+        // Top row
+        if (index >= 8) {
+            if (index % 8 != 0) {
+                int mov = index - 9;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::BPAWN
+                        && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+            int mov = index - 8;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::BPAWN
+                    && boardState[mov] >= State::BROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+            if (index % 8 != 7) {
+                int mov = index - 7;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::BPAWN
+                        && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+        }
+
+        // Middle row (left and right)
+        if (index % 8 != 0) {
+            int mov = index - 1;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::BPAWN
+                    && boardState[mov] >= State::BROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+        }
+
+        if (index % 8 != 7) {
+            int mov = index + 1;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::BPAWN
+                    && boardState[mov] >= State::BROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+        }
+
+        // Bottom row
+        if (index < 56) {
+            if (index % 8 != 0) {
+                int mov = index + 7;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::BPAWN
+                        && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+            int mov = index + 8;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::BPAWN
+                    && boardState[mov] >= State::BROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+            if (index % 8 != 7) {
+                int mov = index + 9;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::BPAWN
+                        && boardState[mov] >= State::BROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+        }
+    } else {  // BLACK KING
+        // Top row
+        if (index >= 8) {
+            if (index % 8 != 0) {
+                int mov = index - 9;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::WPAWN
+                        && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+            int mov = index - 8;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::WPAWN
+                    && boardState[mov] >= State::WROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+            if (index % 8 != 7) {
+                int mov = index - 7;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::WPAWN
+                        && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+        }
+
+        // Middle row
+        if (index % 8 != 0) {
+            int mov = index - 1;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::WPAWN
+                    && boardState[mov] >= State::WROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+        }
+
+        if (index % 8 != 7) {
+            int mov = index + 1;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::WPAWN
+                    && boardState[mov] >= State::WROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+        }
+
+        // Bottom row
+        if (index < 56) {
+            if (index % 8 != 0) {
+                int mov = index + 7;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::WPAWN
+                        && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+            int mov = index + 8;
+            if (boardState[mov] == State::NONE
+                || (boardState[mov] <= State::WPAWN
+                    && boardState[mov] >= State::WROOK)) {
+                boardState[mov] |= State::VALID;
+            }
+            if (index % 8 != 7) {
+                int mov = index + 9;
+                if (boardState[mov] == State::NONE
+                    || (boardState[mov] <= State::WPAWN
+                        && boardState[mov] >= State::WROOK)) {
+                    boardState[mov] |= State::VALID;
+                }
+            }
+        }
+    }
 }
 

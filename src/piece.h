@@ -28,7 +28,7 @@ class Piece {
             this->color = color;
         }
 
-        virtual void getValidMoves(State* boardState, int index) = 0;
+        virtual void getValidMoves(int boardState[], int index) = 0;
 
         virtual ~Piece() {
 

@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "bishop.h"
+#include "fen.h"
 #include "king.h"
 #include "knight.h"
 #include "pawn.h"
@@ -25,9 +26,12 @@ class Board {
         Knight KN[4];
         Bishop B[4];
 
-        State boardState[64];
+        int boardState[64];
+        Fen fen;
         Square* selectedSquare;
         int selectedSquareIndex;
+
+        int turn = 0;
 
     private:
         void clearHighlighted();

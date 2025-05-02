@@ -34,6 +34,253 @@ void Queen::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
-void Queen::getValidMoves(State* boardState, int index) {
+void Queen::getValidMoves(int boardState[], int index) {
+    if (this->color == Color::WHITE) {
+        // Rook-like moves (Straight)
+        // Up
+        for (int i = 1; i < 8; i++) {
+            int mov = index - (8 * i);
+            if (mov < 0) break;
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] >= State::BROOK
+                && boardState[mov] <= State::BPAWN) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+        // Down
+        for (int i = 1; i < 8; i++) {
+            int mov = index + (8 * i);
+            if (mov > 63) break;
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] >= State::BROOK
+                && boardState[mov] <= State::BPAWN) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+        // Left
+        if (index % 8 != 0) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - i;
+                if (mov < 0 || mov % 8 == 7) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if (boardState[mov] >= State::BROOK
+                    && boardState[mov] <= State::BPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+        // Right
+        if (index % 8 != 7) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index + i;
+                if (mov > 63 || mov % 8 == 0) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+                if (boardState[mov] >= State::BROOK
+                    && boardState[mov] <= State::BPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+
+        // Bishop-like moves (Diagonals)
+        if (index % 8 != 7) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (7 * i);
+                if (mov < 0 || mov % 8 == 0) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+                if (boardState[mov] >= State::BROOK
+                    && boardState[mov] <= State::BPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (9 * i);
+                if (mov > 63 || mov % 8 == 0) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+                if (boardState[mov] >= State::BROOK
+                    && boardState[mov] <= State::BPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+
+        if (index % 8 != 0) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (9 * i);
+                if (mov < 0 || mov % 8 == 7) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if (boardState[mov] >= State::BROOK
+                    && boardState[mov] <= State::BPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (7 * i);
+                if (mov > 63 || mov % 8 == 7) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if (boardState[mov] >= State::BROOK
+                    && boardState[mov] <= State::BPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+    } else {
+        // Logic for BLACK Queen (mirror of above)
+        // Up
+        for (int i = 1; i < 8; i++) {
+            int mov = index - (8 * i);
+            if (mov < 0) break;
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] >= State::WROOK
+                && boardState[mov] <= State::WPAWN) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+        // Down
+        for (int i = 1; i < 8; i++) {
+            int mov = index + (8 * i);
+            if (mov > 63) break;
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] >= State::WROOK
+                && boardState[mov] <= State::WPAWN) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+        // Left
+        if (index % 8 != 0) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - i;
+                if (mov < 0 || mov % 8 == 7) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if (boardState[mov] >= State::WROOK
+                    && boardState[mov] <= State::WPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+        // Right
+        if (index % 8 != 7) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index + i;
+                if (mov > 63 || mov % 8 == 0) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+                if (boardState[mov] >= State::WROOK
+                    && boardState[mov] <= State::WPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+
+        // Bishop-like moves
+        if (index % 8 != 7) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (7 * i);
+                if (mov < 0 || mov % 8 == 0) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+                if (boardState[mov] >= State::WROOK
+                    && boardState[mov] <= State::WPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (9 * i);
+                if (mov > 63 || mov % 8 == 0) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 7) continue;
+                }
+                if (boardState[mov] >= State::WROOK
+                    && boardState[mov] <= State::WPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+
+        if (index % 8 != 0) {
+            for (int i = 1; i < 8; i++) {
+                int mov = index - (9 * i);
+                if (mov < 0 || mov % 8 == 7) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if (boardState[mov] >= State::WROOK
+                    && boardState[mov] <= State::WPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+
+            for (int i = 1; i < 8; i++) {
+                int mov = index + (7 * i);
+                if (mov > 63 || mov % 8 == 7) break;
+                if (boardState[mov] == State::NONE) {
+                    boardState[mov] |= State::VALID;
+                    if (mov % 8 != 0) continue;
+                }
+                if (boardState[mov] >= State::WROOK
+                    && boardState[mov] <= State::WPAWN) {
+                    boardState[mov] |= State::VALID;
+                }
+                break;
+            }
+        }
+    }
 }
 

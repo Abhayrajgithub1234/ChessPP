@@ -34,7 +34,7 @@ void Knight::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
-void Knight::getValidMoves(State* boardState, int index) {
+void Knight::getValidMoves(int boardState[], int index) {
     int possibleMoves[8] = {index - 15, index - 6, index + 10, index + 17,
                             index + 15, index + 6, index - 10, index - 17};
 
@@ -69,7 +69,7 @@ void Knight::getValidMoves(State* boardState, int index) {
                 if (boardState[idx] == State::NONE
                     || (boardState[idx] <= State::BPAWN
                         && boardState[idx] >= State::BROOK)) {
-                    boardState[idx] = State::VALID;
+                    boardState[idx] |= State::VALID;
                 }
             }
         }
@@ -80,7 +80,7 @@ void Knight::getValidMoves(State* boardState, int index) {
                 if (boardState[idx] == State::NONE
                     || (boardState[idx] <= State::WPAWN
                         && boardState[idx] >= State::WROOK)) {
-                    boardState[idx] = State::VALID;
+                    boardState[idx] |= State::VALID;
                 }
             }
         }

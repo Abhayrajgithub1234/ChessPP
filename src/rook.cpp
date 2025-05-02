@@ -33,6 +33,138 @@ void Rook::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
-void Rook::getValidMoves(State* boardState, int index) {
+void Rook::getValidMoves(int boardState[], int index) {
+    if (this->color == Color::WHITE) {
+        // Move Up
+        for (int i = 1; i < 8; i++) {
+            int mov = index - 8 * i;
+            if (mov < 0) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::BPAWN
+                && boardState[mov] >= State::BROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+        // Move Down
+        for (int i = 1; i < 8; i++) {
+            int mov = index + 8 * i;
+            if (mov > 63) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::BPAWN
+                && boardState[mov] >= State::BROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+        // Move Left
+        for (int i = 1; i < 8; i++) {
+            int mov = index - i;
+            if ((mov / 8) != (index / 8)) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::BPAWN
+                && boardState[mov] >= State::BROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+        // Move Right
+        for (int i = 1; i < 8; i++) {
+            int mov = index + i;
+            if ((mov / 8) != (index / 8)) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::BPAWN
+                && boardState[mov] >= State::BROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+    } else {
+        // BLACK ROOK
+
+        // Move Up
+        for (int i = 1; i < 8; i++) {
+            int mov = index - 8 * i;
+            if (mov < 0) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::WPAWN
+                && boardState[mov] >= State::WROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+        // Move Down
+        for (int i = 1; i < 8; i++) {
+            int mov = index + 8 * i;
+            if (mov > 63) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::WPAWN
+                && boardState[mov] >= State::WROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+        // Move Left
+        for (int i = 1; i < 8; i++) {
+            int mov = index - i;
+            if ((mov / 8) != (index / 8)) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::WPAWN
+                && boardState[mov] >= State::WROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+
+        // Move Right
+        for (int i = 1; i < 8; i++) {
+            int mov = index + i;
+            if ((mov / 8) != (index / 8)) break;
+
+            if (boardState[mov] == State::NONE) {
+                boardState[mov] |= State::VALID;
+                continue;
+            }
+            if (boardState[mov] <= State::WPAWN
+                && boardState[mov] >= State::WROOK) {
+                boardState[mov] |= State::VALID;
+            }
+            break;
+        }
+    }
 }
 

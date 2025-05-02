@@ -21,6 +21,8 @@ set(SRCS
     bishop.h
     bishop.cpp
     state.h
+    fen.h
+    fen.cpp
     
 )
 

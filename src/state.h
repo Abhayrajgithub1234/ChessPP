@@ -1,8 +1,7 @@
 #pragma once
 
-enum class State {
+enum State {
     NONE = 0,
-    VALID,
 
     WROOK,
     WKNIGHT,
@@ -17,4 +16,11 @@ enum class State {
     BQUEEN,
     BKING,
     BPAWN,
+
+    // PROMOTION,
+    // CHECK,
+    // ENPASSANT
+
+    VALID = 1 << 10
+
 };
