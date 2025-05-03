@@ -34,19 +34,44 @@ void Queen::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
+static bool simulateMove(int BS[], char turn, int sourcePos, int destPos,
+                         int kingPos) {
+    bool isValid;
+    int state = BS[destPos];
+    BS[destPos] = BS[sourcePos];
+    BS[sourcePos] = State::NONE;
+    isValid = !Fen(BS).isCheck(kingPos, turn);
+    // Undo the move to reuse the virtual board BS
+    BS[sourcePos] = BS[destPos];
+    BS[destPos] = state;
+
+    return isValid;
+}
+
 void Queen::getValidMoves(int boardState[], int index) {
+    int KingPos;
+
+    
     if (this->color == Color::WHITE) {
+        for (int i = 0; i < 64; i++) {
+            if (boardState[i] == State::WKING) {
+                KingPos = i;
+                break;
+            }
+        }
         // Rook-like moves (Straight)
         // Up
         for (int i = 1; i < 8; i++) {
             int mov = index - (8 * i);
             if (mov < 0) break;
-            if (boardState[mov] == State::NONE) {
+            if (boardState[mov] == State::NONE
+                && simulateMove(boardState, 'w', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
                 continue;
             }
             if (boardState[mov] >= State::BROOK
-                && boardState[mov] <= State::BPAWN) {
+                && boardState[mov] <= State::BPAWN
+                && simulateMove(boardState, 'w', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
             }
             break;
@@ -55,12 +80,14 @@ void Queen::getValidMoves(int boardState[], int index) {
         for (int i = 1; i < 8; i++) {
             int mov = index + (8 * i);
             if (mov > 63) break;
-            if (boardState[mov] == State::NONE) {
+            if (boardState[mov] == State::NONE
+                && simulateMove(boardState, 'w', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
                 continue;
             }
             if (boardState[mov] >= State::BROOK
-                && boardState[mov] <= State::BPAWN) {
+                && boardState[mov] <= State::BPAWN
+                && simulateMove(boardState, 'w', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
             }
             break;
@@ -70,12 +97,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - i;
                 if (mov < 0 || mov % 8 == 7) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if (boardState[mov] >= State::BROOK
-                    && boardState[mov] <= State::BPAWN) {
+                    && boardState[mov] <= State::BPAWN
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -86,12 +115,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index + i;
                 if (mov > 63 || mov % 8 == 0) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
                 if (boardState[mov] >= State::BROOK
-                    && boardState[mov] <= State::BPAWN) {
+                    && boardState[mov] <= State::BPAWN
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -103,12 +134,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (7 * i);
                 if (mov < 0 || mov % 8 == 0) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
                 if (boardState[mov] >= State::BROOK
-                    && boardState[mov] <= State::BPAWN) {
+                    && boardState[mov] <= State::BPAWN
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -117,12 +150,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index + (9 * i);
                 if (mov > 63 || mov % 8 == 0) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
                 if (boardState[mov] >= State::BROOK
-                    && boardState[mov] <= State::BPAWN) {
+                    && boardState[mov] <= State::BPAWN
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -133,12 +168,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (9 * i);
                 if (mov < 0 || mov % 8 == 7) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if (boardState[mov] >= State::BROOK
-                    && boardState[mov] <= State::BPAWN) {
+                    && boardState[mov] <= State::BPAWN
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -147,29 +184,39 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index + (7 * i);
                 if (mov > 63 || mov % 8 == 7) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if (boardState[mov] >= State::BROOK
-                    && boardState[mov] <= State::BPAWN) {
+                    && boardState[mov] <= State::BPAWN
+                    && simulateMove(boardState, 'w', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
             }
         }
     } else {
+        for (int i = 0; i < 64; i++) {
+            if (boardState[i] == State::BKING) {
+                KingPos = i;
+                break;
+            }
+        }
         // Logic for BLACK Queen (mirror of above)
         // Up
         for (int i = 1; i < 8; i++) {
             int mov = index - (8 * i);
             if (mov < 0) break;
-            if (boardState[mov] == State::NONE) {
+            if (boardState[mov] == State::NONE
+                && simulateMove(boardState, 'b', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
                 continue;
             }
             if (boardState[mov] >= State::WROOK
-                && boardState[mov] <= State::WPAWN) {
+                && boardState[mov] <= State::WPAWN
+                && simulateMove(boardState, 'b', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
             }
             break;
@@ -178,12 +225,14 @@ void Queen::getValidMoves(int boardState[], int index) {
         for (int i = 1; i < 8; i++) {
             int mov = index + (8 * i);
             if (mov > 63) break;
-            if (boardState[mov] == State::NONE) {
+            if (boardState[mov] == State::NONE
+                && simulateMove(boardState, 'b', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
                 continue;
             }
             if (boardState[mov] >= State::WROOK
-                && boardState[mov] <= State::WPAWN) {
+                && boardState[mov] <= State::WPAWN
+                && simulateMove(boardState, 'b', index, mov, KingPos)) {
                 boardState[mov] |= State::VALID;
             }
             break;
@@ -193,12 +242,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - i;
                 if (mov < 0 || mov % 8 == 7) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if (boardState[mov] >= State::WROOK
-                    && boardState[mov] <= State::WPAWN) {
+                    && boardState[mov] <= State::WPAWN
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -209,12 +260,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index + i;
                 if (mov > 63 || mov % 8 == 0) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
                 if (boardState[mov] >= State::WROOK
-                    && boardState[mov] <= State::WPAWN) {
+                    && boardState[mov] <= State::WPAWN
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -226,12 +279,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (7 * i);
                 if (mov < 0 || mov % 8 == 0) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
                 if (boardState[mov] >= State::WROOK
-                    && boardState[mov] <= State::WPAWN) {
+                    && boardState[mov] <= State::WPAWN
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -240,12 +295,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index + (9 * i);
                 if (mov > 63 || mov % 8 == 0) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
                 if (boardState[mov] >= State::WROOK
-                    && boardState[mov] <= State::WPAWN) {
+                    && boardState[mov] <= State::WPAWN
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -256,12 +313,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (9 * i);
                 if (mov < 0 || mov % 8 == 7) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if (boardState[mov] >= State::WROOK
-                    && boardState[mov] <= State::WPAWN) {
+                    && boardState[mov] <= State::WPAWN
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -270,12 +329,14 @@ void Queen::getValidMoves(int boardState[], int index) {
             for (int i = 1; i < 8; i++) {
                 int mov = index + (7 * i);
                 if (mov > 63 || mov % 8 == 7) break;
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if (boardState[mov] >= State::WROOK
-                    && boardState[mov] <= State::WPAWN) {
+                    && boardState[mov] <= State::WPAWN
+                    && simulateMove(boardState, 'b', index, mov, KingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;

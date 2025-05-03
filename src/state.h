@@ -17,7 +17,7 @@ enum State {
     BKING,
     BPAWN,
 
-    // PROMOTION,
+    PROMOTION = 1 << 11,
     // CHECK,
     // ENPASSANT
 

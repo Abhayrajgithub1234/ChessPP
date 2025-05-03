@@ -59,11 +59,13 @@ Fen::~Fen() {
 }
 
 Fen::Fen(int boardState[]) {
+    int validOrPromote = State::VALID | State::PROMOTION;
     int index = 0;
     for (int i = 0; i < 64; i++) {
         if (i % 8 == 0 && i != 0) {
             this->m_code[index++] = '/';
         }
+        State state = (State)(boardState[i] & ~validOrPromote);
         switch (boardState[i]) {
             case State::WROOK:
                 this->m_code[index++] = 'R';
@@ -103,11 +105,13 @@ Fen::Fen(int boardState[]) {
                 break;
             case State::NONE: {
                 int count = 0;
-                for (; boardState[i] == State::NONE && (i % 8 != 7); i++) {
+                for (; (boardState[i] & ~validOrPromote) == State::NONE
+                       && (i % 8 != 7);
+                     i++) {
                     count++;
                 }
                 // Count the last NONE square (at index i)
-                if (boardState[i] == State::NONE) count++;
+                if ((boardState[i] & ~validOrPromote) == State::NONE) count++;
                 else --i;
                 this->m_code[index++] = count + '0';
                 break;
@@ -117,7 +121,7 @@ Fen::Fen(int boardState[]) {
 
     this->m_code[index] = '\0';
     for (int i = 0; i < 64; i++) {
-        this->boardState[i] = boardState[i];
+        this->boardState[i] = boardState[i] & ~validOrPromote;
     }
 }
 

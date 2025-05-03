@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "colors.h"
+#include "fen.h"
 #include "state.h"
 
 class Piece {

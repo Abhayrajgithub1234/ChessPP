@@ -84,6 +84,9 @@ void Board::draw() {
 }
 
 Board::~Board() {
+    for (; promotedIndex - 1 > -1; promotedIndex--) {
+        delete (promoted[promotedIndex - 1]);
+    }
     SDL_DestroyRenderer(m_renderer);
     SDL_FreeSurface(m_windowSurface);
 }
@@ -91,7 +94,6 @@ Board::~Board() {
 void Board::clearHighlighted() {
     for (int i = 0; i < 64; i++) {
         S[i].isHighlighted = false;
-        S[i].isCheck = false;
     }
 }
 
@@ -104,6 +106,38 @@ void Board::movePiece(Square* sq, int index) {
     selectedSquareIndex = -1;
 }
 
+static bool hasValidMoves(int boardState[], char turn, Square S[]) {
+    int BS[64];
+
+    for (int i = 0; i < 64; i++) {
+        BS[i] = boardState[i];
+    }
+
+    for (int i = 0; i < 64; i++) {
+        if (turn == 'w') {
+            if (BS[i] <= State::WPAWN && BS[i] >= State::WROOK) {
+                S[i].getPiece()->getValidMoves(BS, i);
+                for (int i = 0; i < 64; i++) {
+                    if (BS[i] & State::VALID) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            if (BS[i] <= State::BPAWN && BS[i] >= State::BROOK) {
+                S[i].getPiece()->getValidMoves(BS, i);
+                for (int i = 0; i < 64; i++) {
+                    if (BS[i] & State::VALID) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void Board::clickedPosition(int x, int y) {
     int j = x / 75;
     int i = y / 75;
@@ -112,43 +146,116 @@ void Board::clickedPosition(int x, int y) {
     Square* sq = &S[index];
 
     if (sq->isHighlighted) {
-        movePiece(sq, index);
-        this->turn++;
-
-        Fen f(this->boardState);
-        
-        int pos;
-        if (turn % 2) {
-            for (int i = 0; i < 64; i++) {
-                if (this->boardState[i] == State::BKING) {
-                    pos = i;
-                }
+        // Calculates the position of the both of the kings
+        int Wpos;
+        int Bpos;
+        for (int i = 0; i < 64; i++) {
+            if (this->boardState[i] == State::WKING) {
+                Wpos = i;
             }
-        } else {
-            for (int i = 0; i < 64; i++) {
-                if (this->boardState[i] == State::WKING) {
-                    pos = i;
-                }
+            if (this->boardState[i] == State::BKING) {
+                Bpos = i;
             }
         }
 
         clearHighlighted();
-        if (f.isCheck(pos, turn % 2 ? 'b' : 'w')) {
-            S[pos].isCheck = true;
+
+        // Assume we have no check for both the kings
+        S[Bpos].isCheck = false;
+        S[Wpos].isCheck = false;
+
+        // Move the piece
+        movePiece(sq, index);
+        if (this->promotion) {
+            this->promotion = false;
+            int piece;
+        ask:
+            printf(
+                "Promote the pawn to \n1.Queen\n2.Bishop\n3.Knight\n4.Rook\n");
+            scanf("%d", &piece);
+            switch (piece) {
+                case 1:
+                    boardState[index] =
+                        turn % 2 ? State::BQUEEN : State::WQUEEN;
+                    this->promoted[promotedIndex++] = new Queen();
+                    promoted[promotedIndex - 1]->setColor(
+                        turn % 2 ? Color::BLACK : Color::WHITE, m_renderer);
+                    S[index].setPiece(promoted[promotedIndex - 1]);
+                    break;
+                case 2:
+                    boardState[index] =
+                        turn % 2 ? State::BBISHOP : State::WBISHOP;
+                    this->promoted[promotedIndex++] = new Bishop();
+                    promoted[promotedIndex - 1]->setColor(
+                        turn % 2 ? Color::BLACK : Color::WHITE, m_renderer);
+                    S[index].setPiece(promoted[promotedIndex - 1]);
+                    break;
+                case 3:
+                    boardState[index] =
+                        turn % 2 ? State::BKNIGHT : State::WKNIGHT;
+                    this->promoted[promotedIndex++] = new Knight();
+                    promoted[promotedIndex - 1]->setColor(
+                        turn % 2 ? Color::BLACK : Color::WHITE, m_renderer);
+                    S[index].setPiece(promoted[promotedIndex - 1]);
+                    break;
+                case 4:
+                    boardState[index] = turn % 2 ? State::BROOK : State::WROOK;
+                    this->promoted[promotedIndex++] = new Rook();
+                    promoted[promotedIndex - 1]->setColor(
+                        turn % 2 ? Color::BLACK : Color::WHITE, m_renderer);
+                    S[index].setPiece(promoted[promotedIndex - 1]);
+                    break;
+                default:
+                    goto ask;
+            }
+        }
+        this->turn++;
+
+        // Copies the FE-Notation to boardState
+        Fen f(this->boardState);
+
+        bool haveValidMoves =
+            hasValidMoves(boardState, turn % 2 ? 'b' : 'w', this->S);
+
+        // Check if king has "Check"
+        if (f.isCheck(turn % 2 ? Bpos : Wpos, turn % 2 ? 'b' : 'w')) {
+            S[turn % 2 ? Bpos : Wpos].isCheck = true;
+            if (!haveValidMoves) {
+                printf("CHECK MATE\n");
+                if (turn % 2) {
+                    printf("WHITE WINS!!\n");
+                } else {
+                    printf("BLACK WINS!!\n");
+                }
+            }
+        } else if (!haveValidMoves) {
+            printf("StaleMate\n");
         }
 
-                return;
+        return;
     }
 
     clearHighlighted();
 
     if (!sq->empty) {
+        // To have a systematic turns
+        if ((boardState[index] >= State::WROOK
+             && boardState[index] <= State ::WPAWN && turn % 2 != 0)
+            || (boardState[index] >= State::BROOK
+                && boardState[index] <= State ::BPAWN && turn % 2 == 0))
+            return;
+
         selectedSquare = sq;
         selectedSquareIndex = index;
         sq->getPiece()->getValidMoves(boardState, index);
         for (int i = 0; i < 64; i++) {
+            if (boardState[i] & State::PROMOTION) {
+                printf("%s Pawn can be promoted!!\n",
+                       turn % 2 ? "BLACK" : "WHITE");
+                this->promotion = true;
+            }
             if (boardState[i] & State::VALID) {
-                boardState[i] &= ~State::VALID;
+                boardState[i] &= ~(State::VALID | State::PROMOTION);
                 S[i].isHighlighted = true;
             }
         }

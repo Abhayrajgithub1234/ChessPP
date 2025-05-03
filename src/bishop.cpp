@@ -34,18 +34,38 @@ void Bishop::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
+static bool simulateMove(int BS[], char turn, int sourcePos, int destPos,
+                         int kingPos) {
+    bool isValid;
+    int state = BS[destPos];
+    BS[destPos] = BS[sourcePos];
+    BS[sourcePos] = State::NONE;
+    isValid = !Fen(BS).isCheck(kingPos, turn);
+    // Undo the move to reuse the virtual board BS
+    BS[sourcePos] = BS[destPos];
+    BS[destPos] = state;
+
+    return isValid;
+}
+
 void Bishop::getValidMoves(int boardState[], int index) {
+    int kingPos;
     if (this->color == Color::WHITE) {
+        for (int i = 0; i < 64; i++) {
+            if (boardState[i] == State::WKING) kingPos = i;
+        }
         if (index % 8 != 7) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (7 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
 
                 if ((boardState[mov] <= State::BPAWN
-                     && boardState[mov] >= State::BROOK)) {
+                     && boardState[mov] >= State::BROOK)
+                    && simulateMove(boardState, 'w', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -53,13 +73,15 @@ void Bishop::getValidMoves(int boardState[], int index) {
 
             for (int i = 1; i < 8; i++) {
                 int mov = index + (9 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
 
                 if ((boardState[mov] <= State::BPAWN
-                     && boardState[mov] >= State::BROOK)) {
+                     && boardState[mov] >= State::BROOK)
+                    && simulateMove(boardState, 'w', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -69,13 +91,15 @@ void Bishop::getValidMoves(int boardState[], int index) {
         if (index % 8 != 0) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (9 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
 
                 if ((boardState[mov] <= State::BPAWN
-                     && boardState[mov] >= State::BROOK)) {
+                     && boardState[mov] >= State::BROOK
+                     && simulateMove(boardState, 'w', index, mov, kingPos))) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -83,29 +107,36 @@ void Bishop::getValidMoves(int boardState[], int index) {
 
             for (int i = 1; i < 8; i++) {
                 int mov = index + (7 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'w', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
 
                 if ((boardState[mov] <= State::BPAWN
-                     && boardState[mov] >= State::BROOK)) {
+                     && boardState[mov] >= State::BROOK
+                     && simulateMove(boardState, 'w', index, mov, kingPos))) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
             }
         }
     } else {
+        for (int i = 0; i < 64; i++) {
+            if (boardState[i] == State::BKING) kingPos = i;
+        }
         if (index % 8 != 7) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (7 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
 
                 if ((boardState[mov] <= State::WPAWN
-                     && boardState[mov] >= State::WROOK)) {
+                     && boardState[mov] >= State::WROOK
+                     && simulateMove(boardState, 'b', index, mov, kingPos))) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -113,13 +144,15 @@ void Bishop::getValidMoves(int boardState[], int index) {
 
             for (int i = 1; i < 8; i++) {
                 int mov = index + (9 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 7) continue;
                 }
 
                 if ((boardState[mov] <= State::WPAWN
-                     && boardState[mov] >= State::WROOK)) {
+                     && boardState[mov] >= State::WROOK
+                     && simulateMove(boardState, 'b', index, mov, kingPos))) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -129,13 +162,15 @@ void Bishop::getValidMoves(int boardState[], int index) {
         if (index % 8 != 0) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (9 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
 
                 if ((boardState[mov] <= State::WPAWN
-                     && boardState[mov] >= State::WROOK)) {
+                     && boardState[mov] >= State::WROOK
+                     && simulateMove(boardState, 'b', index, mov, kingPos))) {
                     boardState[mov] |= State::VALID;
                 }
                 break;
@@ -143,12 +178,14 @@ void Bishop::getValidMoves(int boardState[], int index) {
 
             for (int i = 1; i < 8; i++) {
                 int mov = index + (7 * i);
-                if (boardState[mov] == State::NONE) {
+                if (boardState[mov] == State::NONE
+                    && simulateMove(boardState, 'b', index, mov, kingPos)) {
                     boardState[mov] |= State::VALID;
                     if (mov % 8 != 0) continue;
                 }
                 if ((boardState[mov] <= State::WPAWN
-                     && boardState[mov] >= State::WROOK)) {
+                     && boardState[mov] >= State::WROOK
+                     && simulateMove(boardState, 'b', index, mov, kingPos))) {
                     boardState[mov] |= State::VALID;
                 }
                 break;

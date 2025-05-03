@@ -32,6 +32,11 @@ class Board {
         int selectedSquareIndex;
 
         int turn = 0;
+        bool promotion = false;
+
+        //this array stores promoted pieces
+        Piece* promoted[16];
+        int promotedIndex = 0;
 
     private:
         void clearHighlighted();

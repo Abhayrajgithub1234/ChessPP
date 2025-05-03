@@ -33,6 +33,19 @@ void King::setColor(Color color, SDL_Renderer* m_renderer) {
     SDL_FreeSurface(m_imageSurface);
 }
 
+static bool simulateMove(int BS[], char turn, int sourcePos, int destPos) {
+    bool isValid;
+    int state = BS[destPos];
+    BS[destPos] = BS[sourcePos];
+    BS[sourcePos] = State::NONE;
+    isValid = !Fen(BS).isCheck(destPos, turn);
+    // Undo the move to reuse the virtual board BS
+    BS[sourcePos] = BS[destPos];
+    BS[destPos] = state;
+
+    return isValid;
+}
+
 void King::getValidMoves(int boardState[], int index) {
     if (this->color == Color::WHITE) {
         // Top row
@@ -42,21 +55,24 @@ void King::getValidMoves(int boardState[], int index) {
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::BPAWN
                         && boardState[mov] >= State::BROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'w', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
             int mov = index - 8;
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::BPAWN
                     && boardState[mov] >= State::BROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'w', index, mov))
+                    boardState[mov] |= State::VALID;
             }
             if (index % 8 != 7) {
                 int mov = index - 7;
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::BPAWN
                         && boardState[mov] >= State::BROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'w', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
         }
@@ -67,7 +83,8 @@ void King::getValidMoves(int boardState[], int index) {
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::BPAWN
                     && boardState[mov] >= State::BROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'w', index, mov))
+                    boardState[mov] |= State::VALID;
             }
         }
 
@@ -76,7 +93,8 @@ void King::getValidMoves(int boardState[], int index) {
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::BPAWN
                     && boardState[mov] >= State::BROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'w', index, mov))
+                    boardState[mov] |= State::VALID;
             }
         }
 
@@ -87,21 +105,24 @@ void King::getValidMoves(int boardState[], int index) {
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::BPAWN
                         && boardState[mov] >= State::BROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'w', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
             int mov = index + 8;
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::BPAWN
                     && boardState[mov] >= State::BROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'w', index, mov))
+                    boardState[mov] |= State::VALID;
             }
             if (index % 8 != 7) {
                 int mov = index + 9;
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::BPAWN
                         && boardState[mov] >= State::BROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'w', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
         }
@@ -113,21 +134,24 @@ void King::getValidMoves(int boardState[], int index) {
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::WPAWN
                         && boardState[mov] >= State::WROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'b', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
             int mov = index - 8;
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::WPAWN
                     && boardState[mov] >= State::WROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'b', index, mov))
+                    boardState[mov] |= State::VALID;
             }
             if (index % 8 != 7) {
                 int mov = index - 7;
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::WPAWN
                         && boardState[mov] >= State::WROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'b', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
         }
@@ -138,7 +162,8 @@ void King::getValidMoves(int boardState[], int index) {
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::WPAWN
                     && boardState[mov] >= State::WROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'b', index, mov))
+                    boardState[mov] |= State::VALID;
             }
         }
 
@@ -147,7 +172,8 @@ void King::getValidMoves(int boardState[], int index) {
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::WPAWN
                     && boardState[mov] >= State::WROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'b', index, mov))
+                    boardState[mov] |= State::VALID;
             }
         }
 
@@ -158,21 +184,24 @@ void King::getValidMoves(int boardState[], int index) {
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::WPAWN
                         && boardState[mov] >= State::WROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'b', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
             int mov = index + 8;
             if (boardState[mov] == State::NONE
                 || (boardState[mov] <= State::WPAWN
                     && boardState[mov] >= State::WROOK)) {
-                boardState[mov] |= State::VALID;
+                if (simulateMove(boardState, 'b', index, mov))
+                    boardState[mov] |= State::VALID;
             }
             if (index % 8 != 7) {
                 int mov = index + 9;
                 if (boardState[mov] == State::NONE
                     || (boardState[mov] <= State::WPAWN
                         && boardState[mov] >= State::WROOK)) {
-                    boardState[mov] |= State::VALID;
+                    if (simulateMove(boardState, 'b', index, mov))
+                        boardState[mov] |= State::VALID;
                 }
             }
         }
