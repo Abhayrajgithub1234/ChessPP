@@ -1,5 +1,7 @@
 #pragma once
+
 #include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
 #include "colors.h"
 #include "piece.h"
@@ -25,5 +27,4 @@ class Square {
         void setPiece(Piece* Piece);
         void clearPiece();
         Piece* getPiece();
-
 };

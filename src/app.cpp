@@ -7,12 +7,18 @@ App::App(unsigned int width, unsigned int height, const char* name) {
     this->width = width;
     this->height = height;
 
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) printf("Failed to init SDL\n");
+
+    if (TTF_Init() < 0) printf("Failed to initialize the TTF\n");
+
     m_window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, width, height, 0);
 }
 
 App::~App() {
+    TTF_Quit();
     SDL_DestroyWindow(m_window);
+    SDL_Quit();
 }
 
 void App::run() {

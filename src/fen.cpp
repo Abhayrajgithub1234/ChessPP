@@ -59,7 +59,7 @@ Fen::~Fen() {
 }
 
 Fen::Fen(int boardState[]) {
-    int validOrPromote = State::VALID | State::PROMOTION;
+    int validOrPromote = State::VALID | State::PROMOTION | State::CASTLE;
     int index = 0;
     for (int i = 0; i < 64; i++) {
         if (i % 8 == 0 && i != 0) {
@@ -320,6 +320,29 @@ bool Fen::isCheck(int pos, char color) {
             if (idx >= 0 && idx <= 63) {
                 if (boardState[idx] == State::WKNIGHT) return true;
             }
+        }
+    }
+
+    // For king
+    int possibleKingMoves[] = {pos + 1, pos - 1, pos - 9, pos - 8,
+                               pos - 7, pos + 7, pos + 8, pos + 9};
+    if (pos % 8 == 0) {
+        possibleKingMoves[1] = possibleKingMoves[2] = possibleKingMoves[5] = -1;
+    }
+
+    if (pos % 8 == 7) {
+        possibleKingMoves[0] = possibleKingMoves[4] = possibleKingMoves[7] = -1;
+    }
+
+    if (color == 'w') {
+        for (int i = 0; i < 8; ++i) {
+            if (possibleKingMoves[i] < 0 || possibleKingMoves[i] > 63) continue;
+            if (boardState[possibleKingMoves[i]] == State::BKING) return true;
+        }
+    } else {
+        for (int i = 0; i < 8; ++i) {
+            if (possibleKingMoves[i] < 0 || possibleKingMoves[i] > 63) continue;
+            if (boardState[possibleKingMoves[i]] == State::WKING) return true;
         }
     }
 

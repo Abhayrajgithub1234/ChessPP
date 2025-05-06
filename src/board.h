@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "bishop.h"
 #include "fen.h"
@@ -47,10 +48,16 @@ class Board {
         bool end = false;
         Color won;
 
+        int windowWidth, windowHeight;
+        int castling = Fen::ALL;
+
     private:
         void clearHighlighted();
         void movePiece(Square* sq, int index);
         void showOptions();
+        void drawGameEndScreen();
+        bool popWindow(int x, int y);
+        void castlingMoves(int index);
 
     public:
         Board(int width, int height, SDL_Window* window);
