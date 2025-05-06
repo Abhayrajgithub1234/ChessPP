@@ -128,6 +128,10 @@ void Rook::getValidMoves(int boardState[], int index) {
     } else {
         // BLACK ROOK
 
+        for (int i = 0; i < 64; i++) {
+            if (boardState[i] == State::BKING) kingPos = i;
+        }
+
         // Move Up
         for (int i = 1; i < 8; i++) {
             int mov = index - 8 * i;

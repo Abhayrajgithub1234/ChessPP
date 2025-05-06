@@ -66,13 +66,6 @@ Board::Board(int width, int height, SDL_Window* window)
         P[i].setColor(Color::WHITE, m_renderer);
         S[index].setPiece(&P[i]);
     }
-
-    int j = 1;
-    for (int i = 63; i >= 0; i--) {
-        int SetIndex = 63 - (j * 8);
-        for (; SetIndex % 8 == 0; SetIndex++) {
-        }
-    }
 }
 
 void Board::draw() {
