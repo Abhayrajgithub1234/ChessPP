@@ -15,6 +15,13 @@ class Fen {
         bool isCheck(int pos, char color);
         ~Fen();
 
-        enum castling { BLC = 1, BSC = 2, WLC = 4, WSC = 8 };
+        enum castling {
+            NONE = 0,
+            BLC = 1,
+            BSC = 2,
+            WLC = 4,
+            WSC = 8,
+            ALL = Fen::BLC | Fen::BSC | Fen::WLC | Fen::WSC
+        };
 };
 

@@ -19,12 +19,14 @@ class Board {
         SDL_Surface* m_windowSurface;
         Square S[64];
 
-        Pawn P[16];
-        King K[2];
-        Queen Q[2];
-        Rook R[4];
-        Knight KN[4];
-        Bishop B[4];
+        Pawn BP[8], WP[8];
+        King BK, WK;
+        Queen BQ[1 + 8], WQ[1 + 8];
+        Rook BR[2 + 8], WR[2 + 8];
+        Knight BN[2 + 8], WN[2 + 8];
+        Bishop BB[2 + 8], WB[2 + 8];
+        int bpi = 0, wpi = 0, bri = 0, wri = 0, bbi = 0, wbi = 0, bni = 0,
+            wni = 0, bqi = 0, wqi = 0;
 
         int boardState[64];
         Fen fen;
@@ -32,15 +34,23 @@ class Board {
         int selectedSquareIndex;
 
         int turn = 0;
+
         bool promotion = false;
 
-        //this array stores promoted pieces
-        Piece* promoted[16];
-        int promotedIndex = 0;
+        SDL_Rect popupRect;
+        Color popupColor;
+        bool showPopup = false;
+        int promote_index;
+        SDL_Texture* promotionPieces[8];
+        SDL_Rect popupImgRects[4];
+
+        bool end = false;
+        Color won;
 
     private:
         void clearHighlighted();
         void movePiece(Square* sq, int index);
+        void showOptions();
 
     public:
         Board(int width, int height, SDL_Window* window);
