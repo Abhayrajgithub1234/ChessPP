@@ -1,9 +1,7 @@
 #include "board.h"
 
-#include <SDL3/SDL_video.h>
-
 Board::Board(int width, int height, SDL_Window* window)
-    // : fen(Fen((const char*)"8/P7/8/8/8/8/8/k6K", 'w', Fen::NONE)) {
+    // : fen(Fen((const char*)"8/8/8/8/8/8/8/K1k4q", 'b', Fen::NONE)) {
     : fen(Fen((const char*)"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", 'w',
               Fen::ALL)) {
     this->width = width;
@@ -13,6 +11,9 @@ Board::Board(int width, int height, SDL_Window* window)
     this->selectedSquare = nullptr;
     this->selectedSquareIndex = -1;
     this->fen.getBoardState(this->boardState);
+
+    // Set the blend mode thing
+    SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
 
     int colorIndex = 0;
     for (int i = 0; i < 8; i++, colorIndex++) {
@@ -89,15 +90,15 @@ Board::Board(int width, int height, SDL_Window* window)
         SDL_FreeSurface(surface);
     }
 
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
     int w, h;
-    int ww, wh;
-    SDL_GetWindowSize(window, &ww, &wh);
     SDL_QueryTexture(promotionPieces[0], NULL, NULL, &w, &h);
 
     this->popupRect.w = (w * 4) + 10;
     this->popupRect.h = (h) + 10;
-    this->popupRect.x = (ww / 2) - (this->popupRect.w / 2);
-    this->popupRect.y = (wh / 2) - (this->popupRect.h / 2);
+    this->popupRect.x = (windowWidth / 2) - (this->popupRect.w / 2);
+    this->popupRect.y = (windowHeight / 2) - (this->popupRect.h / 2);
     for (int i = 0; i < 4; ++i)
         this->popupImgRects[i] = {popupRect.x + (i * w), popupRect.y, w, h};
 }
@@ -105,18 +106,45 @@ Board::Board(int width, int height, SDL_Window* window)
 void Board::draw() {
     SDL_RenderClear(m_renderer);
 
-    if (!end) {
-        for (int i = 0; i < 64; i++) {
-            S[i].draw();
-        }
+    for (int i = 0; i < 64; i++) S[i].draw();
 
-        if (this->showPopup) {
-            showOptions();
-        }
-    } else {
-    }
+    if (this->showPopup) showOptions();
+
+    if (end) drawGameEndScreen();
 
     SDL_RenderPresent(m_renderer);
+}
+
+void Board::drawGameEndScreen() {
+    SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 80);
+
+    SDL_Rect overlay;
+    overlay.w = windowWidth;
+    overlay.h = windowHeight / 3;
+    overlay.x = (windowWidth / 2) - (overlay.w / 2);
+    overlay.y = (windowHeight / 2) - (overlay.h / 2);
+
+    SDL_RenderFillRect(m_renderer, &overlay);
+
+    const char* resultText = this->won == Color::BLACK ? "Black WON!"
+                           : this->won == Color::WHITE ? "White WON!"
+                                                       : "STALEMATE!";
+
+    // Render text (use SDL_ttf)
+    TTF_Font* font = TTF_OpenFont("../assets/RobotoMonoNerdFont-Bold.ttf", 48);
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Surface* textSurface = TTF_RenderText_Blended(font, resultText, white);
+    SDL_Texture* textTexture =
+        SDL_CreateTextureFromSurface(m_renderer, textSurface);
+
+    SDL_Rect textRect = {(windowWidth - textSurface->w) / 2,
+                         (windowHeight - textSurface->h) / 2, textSurface->w,
+                         textSurface->h};
+    SDL_RenderCopy(m_renderer, textTexture, NULL, &textRect);
+
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(font);
 }
 
 Board::~Board() {
@@ -129,10 +157,48 @@ Board::~Board() {
 void Board::clearHighlighted() {
     for (int i = 0; i < 64; i++) {
         S[i].isHighlighted = false;
+        boardState[i] &= ~State::CASTLE;
     }
 }
 
 void Board::movePiece(Square* sq, int index) {
+    switch (boardState[selectedSquareIndex] & ~State::CASTLE) {
+        case State::BROOK:
+            if (index == 0) this->castling &= ~Fen::BLC;
+            else if (index == 7) this->castling &= ~Fen::BSC;
+            break;
+        case State::BKING:
+            this->castling &= ~Fen::BCASTLE;
+            break;
+        case State::WROOK:
+            if (index == 56) this->castling &= ~Fen::WLC;
+            else if (index == 63) this->castling &= ~Fen::WSC;
+            break;
+        case State::WKING:
+            this->castling &= ~Fen::WCASTLE;
+            break;
+        default:
+            break;
+    }
+
+    if (boardState[index] & State::LCASTLE) {
+        boardState[selectedSquareIndex - 1] =
+            boardState[selectedSquareIndex - 4];
+        boardState[selectedSquareIndex - 4] = State::NONE;
+        this->S[selectedSquareIndex - 1].setPiece(
+            this->S[selectedSquareIndex - 4].getPiece());
+        this->S[selectedSquareIndex - 4].clearPiece();
+    }
+
+    if (boardState[index] & State::SCASTLE) {
+        boardState[selectedSquareIndex + 1] =
+            boardState[selectedSquareIndex + 3];
+        boardState[selectedSquareIndex + 3] = State::NONE;
+        this->S[selectedSquareIndex + 1].setPiece(
+            this->S[selectedSquareIndex + 3].getPiece());
+        this->S[selectedSquareIndex + 3].clearPiece();
+    }
+
     sq->setPiece(selectedSquare->getPiece());
     boardState[index] = boardState[selectedSquareIndex];
     selectedSquare->clearPiece();
@@ -187,11 +253,7 @@ void Board::showOptions() {
     }
 }
 
-void Board::clickedPosition(int x, int y) {
-    int j = x / 75;
-    int i = y / 75;
-    int index = i * 8 + j;
-
+bool Board::popWindow(int x, int y) {
     if (this->showPopup) {
         SDL_Point p = {x, y};
         if (SDL_PointInRect(&p, &popupRect)) {
@@ -290,8 +352,18 @@ void Board::clickedPosition(int x, int y) {
                 }
             }
         }
-        return;
+        return true;
     }
+
+    return false;
+}
+
+void Board::clickedPosition(int x, int y) {
+    int j = x / 75;
+    int i = y / 75;
+    int index = i * 8 + j;
+
+    if (popWindow(x, y)) return;
 
     Square* sq = &S[index];
 
@@ -300,15 +372,13 @@ void Board::clickedPosition(int x, int y) {
         int Wpos;
         int Bpos;
         for (int i = 0; i < 64; i++) {
-            if (this->boardState[i] == State::WKING) {
+            if ((this->boardState[i] & ~State::CASTLE) == State::WKING) {
                 Wpos = i;
             }
-            if (this->boardState[i] == State::BKING) {
+            if ((this->boardState[i] & ~State::CASTLE) == State::BKING) {
                 Bpos = i;
             }
         }
-
-        clearHighlighted();
 
         // Assume we have no check for both the kings
         S[Bpos].isCheck = false;
@@ -316,6 +386,8 @@ void Board::clickedPosition(int x, int y) {
 
         // Move the piece
         movePiece(sq, index);
+
+        clearHighlighted();
 
         if (this->promotion) {
             this->promotion = false;
@@ -368,6 +440,9 @@ void Board::clickedPosition(int x, int y) {
         selectedSquare = sq;
         selectedSquareIndex = index;
         sq->getPiece()->getValidMoves(boardState, index);
+
+        castlingMoves(index);
+
         for (int i = 0; i < 64; i++) {
             if (boardState[i] & State::PROMOTION) {
                 printf("%s Pawn can be promoted!!\n",
@@ -382,5 +457,107 @@ void Board::clickedPosition(int x, int y) {
     } else {
         selectedSquare = nullptr;
         selectedSquareIndex = -1;
+    }
+}
+
+void Board::castlingMoves(int index) {
+    int BS[64];
+
+    for (int i = 0; i < 64; i++) BS[i] = boardState[i];
+
+    if (boardState[index] == State::BKING
+        && !Fen(boardState).isCheck(index, 'b')) {
+        if (this->castling & Fen::BLC) {
+            bool exit = false;
+            for (int i = 1; i < index; ++i) {
+                if ((boardState[i] & ~State::VALID) != State::NONE) {
+                    exit = true;
+                    break;
+                }
+            }
+
+            if (!exit) {
+                BS[index] = State::NONE;
+                BS[index - 1] = State::BROOK;
+                BS[index - 2] = State::BKING;
+                BS[index - 4] = State::NONE;
+                if (!Fen(BS).isCheck(index - 2, 'b'))
+                    boardState[index - 2] |= State::VALID | State::LCASTLE;
+                BS[index] = State::BKING;
+                BS[index - 1] = State::NONE;
+                BS[index - 2] = State::NONE;
+                BS[index - 4] = State::BROOK;
+            }
+        }
+
+        if (this->castling & Fen::BSC) {
+            bool exit = false;
+            for (int i = index + 1; i < 7; ++i) {
+                if ((boardState[i] & ~State::VALID) != State::NONE) {
+                    exit = true;
+                    break;
+                }
+            }
+
+            if (!exit) {
+                BS[index] = State::NONE;
+                BS[index + 1] = State::BROOK;
+                BS[index + 2] = State::BKING;
+                BS[index + 3] = State::NONE;
+                if (!Fen(BS).isCheck(index + 2, 'b'))
+                    boardState[index + 2] |= State::VALID | State::SCASTLE;
+                BS[index] = State::BKING;
+                BS[index + 1] = State::NONE;
+                BS[index + 2] = State::NONE;
+                BS[index + 3] = State::BROOK;
+            }
+        }
+    } else if (boardState[index] == State::WKING
+               && !Fen(boardState).isCheck(index, 'w')) {
+        if (this->castling & Fen::WLC) {
+            bool exit = false;
+            for (int i = 57; i < index; ++i) {
+                if ((boardState[i] & ~State::VALID) != State::NONE) {
+                    exit = true;
+                    break;
+                }
+            }
+
+            if (!exit) {
+                BS[index] = State::NONE;
+                BS[index - 1] = State::WROOK;
+                BS[index - 2] = State::WKING;
+                BS[index - 4] = State::NONE;
+                if (!Fen(BS).isCheck(index - 2, 'w'))
+                    boardState[index - 2] |= State::VALID | State::LCASTLE;
+                BS[index] = State::WKING;
+                BS[index - 1] = State::NONE;
+                BS[index - 2] = State::NONE;
+                BS[index - 4] = State::WROOK;
+            }
+        }
+
+        if (this->castling & Fen::WSC) {
+            bool exit = false;
+            for (int i = index + 1; i < 63; ++i) {
+                if ((boardState[i] & ~State::VALID) != State::NONE) {
+                    exit = true;
+                    break;
+                }
+            }
+
+            if (!exit) {
+                BS[index] = State::NONE;
+                BS[index + 1] = State::WROOK;
+                BS[index + 2] = State::WKING;
+                BS[index + 3] = State::NONE;
+                if (!Fen(BS).isCheck(index + 2, 'w'))
+                    boardState[index + 2] |= State::VALID | State::SCASTLE;
+                BS[index] = State::WKING;
+                BS[index + 1] = State::NONE;
+                BS[index + 2] = State::NONE;
+                BS[index + 3] = State::WROOK;
+            }
+        }
     }
 }

@@ -17,10 +17,12 @@ enum State {
     BKING,
     BPAWN,
 
-    PROMOTION = 1 << 11,
     // CHECK,
     // ENPASSANT
 
-    VALID = 1 << 10
-
+    VALID = 1 << 10,
+    PROMOTION = 1 << 11,
+    LCASTLE = 1 << 12,
+    SCASTLE = 1 << 13,
+    CASTLE = LCASTLE | SCASTLE
 };

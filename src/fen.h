@@ -21,7 +21,8 @@ class Fen {
             BSC = 2,
             WLC = 4,
             WSC = 8,
-            ALL = Fen::BLC | Fen::BSC | Fen::WLC | Fen::WSC
+            ALL = Fen::BLC | Fen::BSC | Fen::WLC | Fen::WSC,
+            BCASTLE = BLC | BSC,
+            WCASTLE = WLC | WSC
         };
 };
-

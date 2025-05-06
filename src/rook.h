@@ -12,4 +12,3 @@ class Rook : public Piece {
         void setColor(Color color, SDL_Renderer* m_renderer) override;
         void getValidMoves(int boardState[], int index) override;
 };
-

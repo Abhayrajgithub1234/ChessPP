@@ -40,11 +40,24 @@ void Square::draw() {
     } else {
         SDL_SetRenderDrawColor(m_renderer, 97, 75, 75, 255);
     }
-    if (isHighlighted) SDL_SetRenderDrawColor(m_renderer, 135, 206, 235, 255);
-
-    if (isCheck) SDL_SetRenderDrawColor(m_renderer, 168, 50, 54, 255);
 
     SDL_RenderFillRect(m_renderer, &rect);
+
+    if (isHighlighted) {
+        int padding = 15;
+        SDL_Rect highlight = {rect.x + padding, rect.y + padding,
+                              rect.w - (padding * 2), rect.h - (padding * 2)};
+        filledCircleRGBA(m_renderer, rect.x + (rect.w / 2),
+                         rect.y + (rect.h / 2), 20, 0, 0, 0, 128);
+
+        //  Temporary fix
+        SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+    }
+
+    if (isCheck) {
+        SDL_SetRenderDrawColor(m_renderer, 168, 50, 54, 255);
+        SDL_RenderFillRect(m_renderer, &rect);
+    }
 
     if (!empty) piece->draw(m_renderer);
 }
@@ -72,4 +85,3 @@ void Square::clearPiece() {
 Piece* Square::getPiece() {
     return this->piece;
 }
-
