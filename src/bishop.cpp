@@ -15,21 +15,25 @@ Bishop::~Bishop() {
 }
 
 void Bishop::draw(SDL_Renderer* m_renderer) {
+    if (!texture) return;
+    int padding = size / 10;
     SDL_Rect rect;
-    rect.x = xPos;
-    rect.y = yPos;
-    rect.h = 75;
-    rect.w = 75;
-    // SDL_BlitSurface(m_imageSurface, NULL, m_windowSurface, &rect);
+    rect.x = xPos + padding;
+    rect.y = yPos + padding;
+    rect.h = size - (padding * 2);
+    rect.w = size - (padding * 2);
     SDL_RenderCopy(m_renderer, texture, NULL, &rect);
 }
 
 void Bishop::setColor(Color color, SDL_Renderer* m_renderer) {
     this->color = color;
     SDL_Surface* m_imageSurface =
-        SDL_LoadBMP((color == Color::WHITE ? "../assets/Wbishop.bmp"
-                                           : "../assets/Bbishop.bmp"));
-    if (!m_imageSurface) printf("Image not loaded!!\n");
+        SDL_LoadBMP((color == Color::WHITE ? "assets/Wbishop.bmp"
+                                           : "assets/Bbishop.bmp"));
+    if (!m_imageSurface) {
+        printf("Bishop image not loaded: %s\n", SDL_GetError());
+        return;
+    }
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
 }
@@ -49,11 +53,13 @@ static bool simulateMove(int BS[], char turn, int sourcePos, int destPos,
 }
 
 void Bishop::getValidMoves(int boardState[], int index) {
-    int kingPos;
+    int kingPos = -1;
+    int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
     if (this->color == Color::WHITE) {
         for (int i = 0; i < 64; i++) {
-            if (boardState[i] == State::WKING) kingPos = i;
+            if ((boardState[i] & mask) == State::WKING) kingPos = i;
         }
+        if (kingPos < 0) return;
         if (index % 8 != 7) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (7 * i);
@@ -123,8 +129,9 @@ void Bishop::getValidMoves(int boardState[], int index) {
         }
     } else {
         for (int i = 0; i < 64; i++) {
-            if (boardState[i] == State::BKING) kingPos = i;
+            if ((boardState[i] & mask) == State::BKING) kingPos = i;
         }
+        if (kingPos < 0) return;
         if (index % 8 != 7) {
             for (int i = 1; i < 8; i++) {
                 int mov = index - (7 * i);

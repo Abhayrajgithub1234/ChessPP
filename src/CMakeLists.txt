@@ -3,6 +3,7 @@ set(SRCS
     app.h
     app.cpp
     colors.h
+    constants.h
     square.h
     square.cpp
     board.cpp

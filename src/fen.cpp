@@ -65,8 +65,8 @@ Fen::Fen(int boardState[]) {
         if (i % 8 == 0 && i != 0) {
             this->m_code[index++] = '/';
         }
-        State state = (State)(boardState[i] & ~validOrPromote);
-        switch (boardState[i]) {
+        int cleanState = boardState[i] & ~validOrPromote;
+        switch (cleanState) {
             case State::WROOK:
                 this->m_code[index++] = 'R';
                 break;

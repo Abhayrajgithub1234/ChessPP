@@ -12,19 +12,24 @@ Pawn::~Pawn() {
 }
 
 void Pawn::draw(SDL_Renderer* m_renderer) {
+    if (!texture) return;
+    int padding = size / 10;  // 10% padding for nicer look
     SDL_Rect rect;
-    rect.x = xPos;
-    rect.y = yPos;
-    rect.h = 75;
-    rect.w = 75;
+    rect.x = xPos + padding;
+    rect.y = yPos + padding;
+    rect.h = size - (padding * 2);
+    rect.w = size - (padding * 2);
     SDL_RenderCopy(m_renderer, texture, NULL, &rect);
 }
 
 void Pawn::setColor(Color color, SDL_Renderer* m_renderer) {
     this->color = color;
     SDL_Surface* m_imageSurface = SDL_LoadBMP((
-        color == Color::WHITE ? "../assets/Wpawn.bmp" : "../assets/Bpawn.bmp"));
-    if (!m_imageSurface) printf("Image not loaded!!\n");
+        color == Color::WHITE ? "assets/Wpawn.bmp" : "assets/Bpawn.bmp"));
+    if (!m_imageSurface) {
+        printf("Pawn image not loaded: %s\n", SDL_GetError());
+        return;
+    }
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
 }
@@ -44,12 +49,14 @@ static bool simulateMove(int BS[], char turn, int sourcePos, int destPos,
 }
 
 void Pawn::getValidMoves(int boardState[], int index) {
-    int KingPos;
+    int KingPos = -1;
+    int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
 
     if (this->color == Color::BLACK) {
         for (int i = 0; i < 64; i++) {
-            if (boardState[i] == State::BKING) KingPos = i;
+            if ((boardState[i] & mask) == State::BKING) KingPos = i;
         }
+        if (KingPos < 0) return;  // Safety check
 
         if (index >= 8 && index <= 15) {
             if (boardState[index + 16] == State::NONE
@@ -106,8 +113,9 @@ void Pawn::getValidMoves(int boardState[], int index) {
 
     } else {  // WHITE pawn
         for (int i = 0; i < 64; i++) {
-            if (boardState[i] == State::WKING) KingPos = i;
+            if ((boardState[i] & mask) == State::WKING) KingPos = i;
         }
+        if (KingPos < 0) return;  // Safety check
 
         if (index >= 48 && index <= 55) {
             if (boardState[index - 16] == State::NONE

@@ -17,6 +17,8 @@ class Square {
         bool empty;
         bool isHighlighted;
         bool isCheck;
+        bool isLastMove;    // Highlight for last move from/to squares
+        bool isSelected;    // Currently selected square
         Square();
         Square(int x, int y, int size, Color color, SDL_Renderer* renderer);
         ~Square();

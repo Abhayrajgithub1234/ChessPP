@@ -15,20 +15,24 @@ King::~King() {
 }
 
 void King::draw(SDL_Renderer* m_renderer) {
+    if (!texture) return;
+    int padding = size / 12;  // Smaller padding for king
     SDL_Rect rect;
-    rect.x = xPos;
-    rect.y = yPos;
-    rect.h = 75;
-    rect.w = 75;
-    // SDL_BlitSurface(m_imageSurface, NULL, m_windowSurface, &rect);
+    rect.x = xPos + padding;
+    rect.y = yPos + padding;
+    rect.h = size - (padding * 2);
+    rect.w = size - (padding * 2);
     SDL_RenderCopy(m_renderer, texture, NULL, &rect);
 }
 
 void King::setColor(Color color, SDL_Renderer* m_renderer) {
     this->color = color;
     SDL_Surface* m_imageSurface = SDL_LoadBMP((
-        color == Color::WHITE ? "../assets/Wking.bmp" : "../assets/Bking.bmp"));
-    if (!m_imageSurface) printf("Image not loaded!!\n");
+        color == Color::WHITE ? "assets/Wking.bmp" : "assets/Bking.bmp"));
+    if (!m_imageSurface) {
+        printf("King image not loaded: %s\n", SDL_GetError());
+        return;
+    }
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
 }

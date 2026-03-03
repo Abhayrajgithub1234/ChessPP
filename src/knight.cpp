@@ -15,21 +15,25 @@ Knight::~Knight() {
 }
 
 void Knight::draw(SDL_Renderer* m_renderer) {
+    if (!texture) return;
+    int padding = size / 10;
     SDL_Rect rect;
-    rect.x = xPos;
-    rect.y = yPos;
-    rect.h = 75;
-    rect.w = 75;
-    // SDL_BlitSurface(m_imageSurface, NULL, m_windowSurface, &rect);
+    rect.x = xPos + padding;
+    rect.y = yPos + padding;
+    rect.h = size - (padding * 2);
+    rect.w = size - (padding * 2);
     SDL_RenderCopy(m_renderer, texture, NULL, &rect);
 }
 
 void Knight::setColor(Color color, SDL_Renderer* m_renderer) {
     this->color = color;
     SDL_Surface* m_imageSurface =
-        SDL_LoadBMP((color == Color::WHITE ? "../assets/Wknight.bmp"
-                                           : "../assets/Bknight.bmp"));
-    if (!m_imageSurface) printf("Image not loaded!!\n");
+        SDL_LoadBMP((color == Color::WHITE ? "assets/Wknight.bmp"
+                                           : "assets/Bknight.bmp"));
+    if (!m_imageSurface) {
+        printf("Knight image not loaded: %s\n", SDL_GetError());
+        return;
+    }
     texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
     SDL_FreeSurface(m_imageSurface);
 }
@@ -49,7 +53,8 @@ static bool simulateMove(int BS[], char turn, int sourcePos, int destPos,
 }
 
 void Knight::getValidMoves(int boardState[], int index) {
-    int kingPos;
+    int kingPos = -1;
+    int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
 
     int possibleMoves[8] = {index - 15, index - 6, index + 10, index + 17,
                             index + 15, index + 6, index - 10, index - 17};
@@ -80,8 +85,9 @@ void Knight::getValidMoves(int boardState[], int index) {
     }
     if (this->color == Color::WHITE) {
         for (int i = 0; i < 64; i++) {
-            if (boardState[i] == State::WKING) kingPos = i;
+            if ((boardState[i] & mask) == State::WKING) kingPos = i;
         }
+        if (kingPos < 0) return;
         for (int i = 0; i < 8; i++) {
             int idx = possibleMoves[i];
             if (idx >= 0 && idx <= 63) {
@@ -95,8 +101,9 @@ void Knight::getValidMoves(int boardState[], int index) {
         }
     } else {
         for (int i = 0; i < 64; i++) {
-            if (boardState[i] == State::BKING) kingPos = i;
+            if ((boardState[i] & mask) == State::BKING) kingPos = i;
         }
+        if (kingPos < 0) return;
         for (int i = 0; i < 8; i++) {
             int idx = possibleMoves[i];
             if (idx >= 0 && idx <= 63) {

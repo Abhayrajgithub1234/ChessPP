@@ -1,6 +1,8 @@
 #include "app.h"
+#include "constants.h"
 
 int main() {
-    App app(600, 600, "ChessPP");
+    App app(ChessConstants::DEFAULT_WINDOW_WIDTH, 
+            ChessConstants::DEFAULT_WINDOW_HEIGHT, "ChessPP");
     app.run();
 }
