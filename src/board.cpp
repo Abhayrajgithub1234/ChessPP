@@ -70,7 +70,7 @@ Board::Board(int width, int height, SDL_Window* window)
 void Board::updateLayout() {
     // Calculate available space for board (leave room for UI at bottom)
     int turnIndicatorHeight = 35;  // Space for turn text
-    int uiHeight = turnIndicatorHeight + ChessConstants::BUTTON_HEIGHT + ChessConstants::BUTTON_MARGIN * 2 + 40;
+    int uiHeight = turnIndicatorHeight + ChessConstants::BUTTON_HEIGHT * 2 + ChessConstants::BUTTON_MARGIN * 3 + 40;
     int availableHeight = windowHeight - uiHeight;
     int availableWidth = windowWidth - ChessConstants::BOARD_PADDING * 2;
     
@@ -85,8 +85,7 @@ void Board::updateLayout() {
     
     // Position buttons below the board (after turn indicator)
     int buttonY = boardOffsetY + actualBoardSize + turnIndicatorHeight + ChessConstants::BUTTON_MARGIN;
-    int totalButtonWidth = ChessConstants::BUTTON_WIDTH * 2 + ChessConstants::BUTTON_MARGIN;
-    int buttonStartX = (windowWidth - totalButtonWidth) / 2;
+    int buttonStartX = (windowWidth - ChessConstants::BUTTON_WIDTH) / 2;
     
     resetButtonRect = {
         buttonStartX,
@@ -95,10 +94,23 @@ void Board::updateLayout() {
         ChessConstants::BUTTON_HEIGHT
     };
     
-    newGameButtonRect = {
-        buttonStartX + ChessConstants::BUTTON_WIDTH + ChessConstants::BUTTON_MARGIN,
-        buttonY,
-        ChessConstants::BUTTON_WIDTH,
+    // Undo/Redo buttons on the second row
+    int undoRedoY = buttonY + ChessConstants::BUTTON_HEIGHT + ChessConstants::BUTTON_MARGIN;
+    int undoRedoWidth = 80;  // Smaller buttons for undo/redo
+    int totalUndoRedoWidth = undoRedoWidth * 2 + ChessConstants::BUTTON_MARGIN;
+    int undoRedoStartX = (windowWidth - totalUndoRedoWidth) / 2;
+    
+    undoButtonRect = {
+        undoRedoStartX,
+        undoRedoY,
+        undoRedoWidth,
+        ChessConstants::BUTTON_HEIGHT
+    };
+    
+    redoButtonRect = {
+        undoRedoStartX + undoRedoWidth + ChessConstants::BUTTON_MARGIN,
+        undoRedoY,
+        undoRedoWidth,
         ChessConstants::BUTTON_HEIGHT
     };
 }
@@ -221,7 +233,10 @@ void Board::drawUI() {
     
     // Draw buttons
     drawButton(resetButtonRect, "Reset", resetHovered);
-    drawButton(newGameButtonRect, "New Game", newGameHovered);
+    
+    // Draw undo/redo buttons (grayed out if not available)
+    drawButton(undoButtonRect, "Undo", undoHovered && canUndo());
+    drawButton(redoButtonRect, "Redo", redoHovered && canRedo());
 }
 
 void Board::drawButton(SDL_Rect& rect, const char* text, bool hovered) {
@@ -414,6 +429,10 @@ void Board::reset() {
     this->lastMoveFrom = -1;
     this->lastMoveTo = -1;
     
+    // Clear undo/redo history
+    while (!moveHistory.empty()) moveHistory.pop();
+    while (!redoStack.empty()) redoStack.pop();
+    
     // Reinitialize pieces
     initializePieces();
 }
@@ -426,8 +445,13 @@ bool Board::checkButtonClick(int x, int y) {
         return true;
     }
     
-    if (SDL_PointInRect(&p, &newGameButtonRect)) {
-        reset();
+    if (SDL_PointInRect(&p, &undoButtonRect)) {
+        undo();
+        return true;
+    }
+    
+    if (SDL_PointInRect(&p, &redoButtonRect)) {
+        redo();
         return true;
     }
     
@@ -500,6 +524,13 @@ void Board::clearHighlighted() {
 }
 
 void Board::movePiece(Square* sq, int index) {
+    // Detect castling before saving
+    bool isCastleShort = (boardState[index] & State::SCASTLE) != 0;
+    bool isCastleLong = (boardState[index] & State::LCASTLE) != 0;
+    
+    // Save move to history BEFORE making any changes
+    saveMoveToHistory(selectedSquareIndex, index, isCastleShort, isCastleLong);
+    
     // Clear previous last move highlights
     if (lastMoveFrom >= 0 && lastMoveFrom < 64) S[lastMoveFrom].isLastMove = false;
     if (lastMoveTo >= 0 && lastMoveTo < 64) S[lastMoveTo].isLastMove = false;
@@ -995,4 +1026,245 @@ void Board::handleResize(int newWidth, int newHeight) {
     for (int i = 0; i < 4; ++i) {
         this->popupImgRects[i] = {popupRect.x + (i * w), popupRect.y, w, h};
     }
+}
+
+// ============ Undo/Redo Implementation ============
+
+void Board::saveMoveToHistory(int fromIndex, int toIndex, bool isCastleShort, bool isCastleLong) {
+    MoveRecord record;
+    record.fromIndex = fromIndex;
+    record.toIndex = toIndex;
+    record.turnBefore = turn;
+    record.castlingBefore = castling;
+    record.wasCastleShort = isCastleShort;
+    record.wasCastleLong = isCastleLong;
+    record.prevLastMoveFrom = lastMoveFrom;
+    record.prevLastMoveTo = lastMoveTo;
+    
+    // Save entire board state
+    for (int i = 0; i < ChessConstants::TOTAL_SQUARES; i++) {
+        record.boardStateBefore[i] = boardState[i];
+    }
+    
+    // Find king positions and check states
+    int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
+    for (int i = 0; i < 64; i++) {
+        if ((boardState[i] & mask) == State::WKING) {
+            record.whiteKingPos = i;
+            record.whiteKingWasInCheck = S[i].isCheck;
+        }
+        if ((boardState[i] & mask) == State::BKING) {
+            record.blackKingPos = i;
+            record.blackKingWasInCheck = S[i].isCheck;
+        }
+    }
+    
+    moveHistory.push(record);
+    
+    // Clear redo stack when a new move is made
+    while (!redoStack.empty()) redoStack.pop();
+}
+
+void Board::restoreBoardFromRecord(const MoveRecord& record) {
+    // Clear all squares first
+    for (int i = 0; i < 64; i++) {
+        S[i].clearPiece();
+        S[i].isHighlighted = false;
+        S[i].isCheck = false;
+        S[i].isLastMove = false;
+        S[i].isSelected = false;
+    }
+    
+    // Restore board state
+    for (int i = 0; i < ChessConstants::TOTAL_SQUARES; i++) {
+        boardState[i] = record.boardStateBefore[i];
+    }
+    
+    // Restore game variables
+    turn = record.turnBefore;
+    castling = record.castlingBefore;
+    lastMoveFrom = record.prevLastMoveFrom;
+    lastMoveTo = record.prevLastMoveTo;
+    
+    // Restore last move highlights
+    if (lastMoveFrom >= 0 && lastMoveFrom < 64) S[lastMoveFrom].isLastMove = true;
+    if (lastMoveTo >= 0 && lastMoveTo < 64) S[lastMoveTo].isLastMove = true;
+    
+    // Restore check highlights
+    if (record.whiteKingPos >= 0 && record.whiteKingWasInCheck) {
+        S[record.whiteKingPos].isCheck = true;
+    }
+    if (record.blackKingPos >= 0 && record.blackKingWasInCheck) {
+        S[record.blackKingPos].isCheck = true;
+    }
+    
+    // Clear selection
+    selectedSquare = nullptr;
+    selectedSquareIndex = -1;
+    promotion = false;
+    showPopup = false;
+    end = false;
+    
+    // Reinitialize pieces on squares based on board state
+    bpi = wpi = bri = wri = bbi = wbi = bni = wni = bqi = wqi = 0;
+    
+    for (int i = 0; i < 64; i++) {
+        int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
+        int pieceType = boardState[i] & mask;
+        
+        switch (pieceType) {
+            case State::WROOK:
+                if (wri < ChessConstants::MAX_ROOKS) {
+                    WR[wri].setColor(Color::WHITE, m_renderer);
+                    S[i].setPiece(&WR[wri++]);
+                }
+                break;
+            case State::WKNIGHT:
+                if (wni < ChessConstants::MAX_KNIGHTS) {
+                    WN[wni].setColor(Color::WHITE, m_renderer);
+                    S[i].setPiece(&WN[wni++]);
+                }
+                break;
+            case State::WBISHOP:
+                if (wbi < ChessConstants::MAX_BISHOPS) {
+                    WB[wbi].setColor(Color::WHITE, m_renderer);
+                    S[i].setPiece(&WB[wbi++]);
+                }
+                break;
+            case State::WQUEEN:
+                if (wqi < ChessConstants::MAX_QUEENS) {
+                    WQ[wqi].setColor(Color::WHITE, m_renderer);
+                    S[i].setPiece(&WQ[wqi++]);
+                }
+                break;
+            case State::WKING:
+                WK.setColor(Color::WHITE, m_renderer);
+                S[i].setPiece(&WK);
+                break;
+            case State::WPAWN:
+                if (wpi < ChessConstants::MAX_PAWNS) {
+                    WP[wpi].setColor(Color::WHITE, m_renderer);
+                    S[i].setPiece(&WP[wpi++]);
+                }
+                break;
+            case State::BROOK:
+                if (bri < ChessConstants::MAX_ROOKS) {
+                    BR[bri].setColor(Color::BLACK, m_renderer);
+                    S[i].setPiece(&BR[bri++]);
+                }
+                break;
+            case State::BKNIGHT:
+                if (bni < ChessConstants::MAX_KNIGHTS) {
+                    BN[bni].setColor(Color::BLACK, m_renderer);
+                    S[i].setPiece(&BN[bni++]);
+                }
+                break;
+            case State::BBISHOP:
+                if (bbi < ChessConstants::MAX_BISHOPS) {
+                    BB[bbi].setColor(Color::BLACK, m_renderer);
+                    S[i].setPiece(&BB[bbi++]);
+                }
+                break;
+            case State::BQUEEN:
+                if (bqi < ChessConstants::MAX_QUEENS) {
+                    BQ[bqi].setColor(Color::BLACK, m_renderer);
+                    S[i].setPiece(&BQ[bqi++]);
+                }
+                break;
+            case State::BKING:
+                BK.setColor(Color::BLACK, m_renderer);
+                S[i].setPiece(&BK);
+                break;
+            case State::BPAWN:
+                if (bpi < ChessConstants::MAX_PAWNS) {
+                    BP[bpi].setColor(Color::BLACK, m_renderer);
+                    S[i].setPiece(&BP[bpi++]);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+bool Board::canUndo() const {
+    return !moveHistory.empty();
+}
+
+bool Board::canRedo() const {
+    return !redoStack.empty();
+}
+
+void Board::undo() {
+    if (!canUndo()) return;
+    
+    // Save current state to redo stack before undoing
+    MoveRecord redoRecord;
+    redoRecord.turnBefore = turn;
+    redoRecord.castlingBefore = castling;
+    redoRecord.prevLastMoveFrom = lastMoveFrom;
+    redoRecord.prevLastMoveTo = lastMoveTo;
+    
+    for (int i = 0; i < ChessConstants::TOTAL_SQUARES; i++) {
+        redoRecord.boardStateBefore[i] = boardState[i];
+    }
+    
+    // Find king positions and check states for redo
+    int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
+    for (int i = 0; i < 64; i++) {
+        if ((boardState[i] & mask) == State::WKING) {
+            redoRecord.whiteKingPos = i;
+            redoRecord.whiteKingWasInCheck = S[i].isCheck;
+        }
+        if ((boardState[i] & mask) == State::BKING) {
+            redoRecord.blackKingPos = i;
+            redoRecord.blackKingWasInCheck = S[i].isCheck;
+        }
+    }
+    
+    redoStack.push(redoRecord);
+    
+    // Get the move to undo
+    MoveRecord record = moveHistory.top();
+    moveHistory.pop();
+    
+    // Restore board to previous state
+    restoreBoardFromRecord(record);
+}
+
+void Board::redo() {
+    if (!canRedo()) return;
+    
+    // Save current state to history before redoing
+    MoveRecord historyRecord;
+    historyRecord.turnBefore = turn;
+    historyRecord.castlingBefore = castling;
+    historyRecord.prevLastMoveFrom = lastMoveFrom;
+    historyRecord.prevLastMoveTo = lastMoveTo;
+    
+    for (int i = 0; i < ChessConstants::TOTAL_SQUARES; i++) {
+        historyRecord.boardStateBefore[i] = boardState[i];
+    }
+    
+    // Find king positions and check states
+    int mask = ~(State::VALID | State::PROMOTION | State::CASTLE);
+    for (int i = 0; i < 64; i++) {
+        if ((boardState[i] & mask) == State::WKING) {
+            historyRecord.whiteKingPos = i;
+            historyRecord.whiteKingWasInCheck = S[i].isCheck;
+        }
+        if ((boardState[i] & mask) == State::BKING) {
+            historyRecord.blackKingPos = i;
+            historyRecord.blackKingWasInCheck = S[i].isCheck;
+        }
+    }
+    
+    moveHistory.push(historyRecord);
+    
+    // Get the state to redo to
+    MoveRecord record = redoStack.top();
+    redoStack.pop();
+    
+    // Restore board to the redo state
+    restoreBoardFromRecord(record);
 }

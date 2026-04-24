@@ -2,12 +2,14 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <stack>
 
 #include "bishop.h"
 #include "constants.h"
 #include "fen.h"
 #include "king.h"
 #include "knight.h"
+#include "move_record.h"
 #include "pawn.h"
 #include "queen.h"
 #include "rook.h"
@@ -56,13 +58,21 @@ class Board {
         
         // UI Elements
         SDL_Rect resetButtonRect;
-        SDL_Rect newGameButtonRect;
         bool resetHovered = false;
-        bool newGameHovered = false;
         
         // Last move tracking (for highlighting)
         int lastMoveFrom = -1;
         int lastMoveTo = -1;
+        
+        // Undo/Redo stacks
+        std::stack<MoveRecord> moveHistory;
+        std::stack<MoveRecord> redoStack;
+        
+        // Undo/Redo UI buttons
+        SDL_Rect undoButtonRect;
+        SDL_Rect redoButtonRect;
+        bool undoHovered = false;
+        bool redoHovered = false;
 
     private:
         void clearHighlighted();
@@ -78,6 +88,8 @@ class Board {
         void drawBoardCoordinates();
         void initializePieces();
         void updateLayout();
+        void saveMoveToHistory(int fromIndex, int toIndex, bool isCastleShort, bool isCastleLong);
+        void restoreBoardFromRecord(const MoveRecord& record);
 
     public:
         Board(int width, int height, SDL_Window* window);
@@ -87,4 +99,8 @@ class Board {
         void handleResize(int newWidth, int newHeight);
         void reset();
         bool checkButtonClick(int x, int y);
+        void undo();
+        void redo();
+        bool canUndo() const;
+        bool canRedo() const;
 };
