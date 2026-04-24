@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build/cmake_install.cmake",
+		"/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build/src/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,68 @@
+[
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/main.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/main.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/main.cpp",
+  "output": "CMakeFiles/chess.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/app.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/app.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/app.cpp",
+  "output": "CMakeFiles/chess.dir/src/app.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/square.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/square.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/square.cpp",
+  "output": "CMakeFiles/chess.dir/src/square.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/board.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/board.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/board.cpp",
+  "output": "CMakeFiles/chess.dir/src/board.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/pawn.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/pawn.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/pawn.cpp",
+  "output": "CMakeFiles/chess.dir/src/pawn.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/king.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/king.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/king.cpp",
+  "output": "CMakeFiles/chess.dir/src/king.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/queen.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/queen.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/queen.cpp",
+  "output": "CMakeFiles/chess.dir/src/queen.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/rook.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/rook.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/rook.cpp",
+  "output": "CMakeFiles/chess.dir/src/rook.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/knight.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/knight.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/knight.cpp",
+  "output": "CMakeFiles/chess.dir/src/knight.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/bishop.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/bishop.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/bishop.cpp",
+  "output": "CMakeFiles/chess.dir/src/bishop.cpp.o"
+},
+{
+  "directory": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/build",
+  "command": "/usr/bin/c++  -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -I/opt/homebrew/Cellar/harfbuzz/11.4.5/include/harfbuzz -I/opt/homebrew/Cellar/glib/2.84.4/include/glib-2.0 -I/opt/homebrew/Cellar/glib/2.84.4/lib/glib-2.0/include -I/opt/homebrew/opt/gettext/include -I/opt/homebrew/Cellar/pcre2/10.46/include -I/opt/homebrew/Cellar/graphite2/1.3.14/include -I/opt/homebrew/opt/freetype/include/freetype2 -I/opt/homebrew/opt/libpng/include/libpng16 -I/opt/homebrew/Cellar/sdl2_gfx/1.0.4/include/SDL2 -Wall -Wextra -Wpedantic -O3 -DNDEBUG -std=gnu++17 -arch arm64 -D_THREAD_SAFE -o CMakeFiles/chess.dir/src/fen.cpp.o -c /Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/fen.cpp",
+  "file": "/Users/abhayrajbhatn/Projects/SkillLab/ChessPP/src/fen.cpp",
+  "output": "CMakeFiles/chess.dir/src/fen.cpp.o"
+}
+]
